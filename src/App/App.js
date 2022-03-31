@@ -6,39 +6,69 @@ import { Header } from '../components/Header';
 import { Search } from '../components/Search';
 
 import './App.css';
+import { Pagination } from '../components/Pagination';
 
 function App() {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState([]); // estos son estados independientes, tambien hay estados compuestos que son mas escalables y para proyectos grandes
+  const [searchValue, setSearchValue] = useState('');
+  const [info, setInfo] = useState({});
 
-  const URL = 'https://rickandmortyapi.com/api/character';
+  const API_URL = 'https://rickandmortyapi.com/api/character';
 
-  const apiFetch = async () => {
+  const apiFetch = async (url) => {
     try {
-      const response = await fetch(URL);
+      const response = await fetch(url);
       const dataJSON = await response.json();
 
       setData(dataJSON.results);
+      setInfo(dataJSON.info);
     } catch (error) {
       console.log(error);
     }
   };
 
   useEffect(() => {
-    apiFetch();
+    apiFetch(API_URL);
   }, []);
+
+  const onPrevious = () => {
+    apiFetch(info.prev);
+  };
+
+  const onNext = () => {
+    apiFetch(info.next);
+  };
+
+  let filterCharacters = []; // se llaman estados derivados, que vienen a guardar datos a partir de otro estado para evitar crear mas estados indepedientes
+
+  if (!searchValue.length >= 1) {
+    filterCharacters = data;
+  } else {
+    filterCharacters = data.filter((todo) => {
+      const todoText = todo.name.toLowerCase();
+      const searchText = searchValue.toLowerCase();
+      return todoText.includes(searchText);
+    });
+  }
 
   return (
     <React.Fragment>
-      <div className="w-full h-full bg-hero bg-cover bg-no-repeat bg-center">
+      <div className="w-full min-h-screen bg-hero bg-cover bg-no-repeat bg-center">
         <div className="container mx-auto">
           <div>
             <Header>
-              <Search />
+              <Search
+                searchValue={searchValue}
+                setSearchValue={setSearchValue}
+              />
             </Header>
           </div>
 
-          <CharactersList>
-            {data.map((character) => (
+          <CharactersList
+            filterCharacters={filterCharacters}
+            searchValue={searchValue}
+          >
+            {filterCharacters.map((character) => (
               <CharacterItem
                 key={character.id}
                 name={character.name}
@@ -47,6 +77,7 @@ function App() {
               />
             ))}
           </CharactersList>
+          <Pagination prev={info.prev} previous={onPrevious} next={onNext} />
         </div>
       </div>
     </React.Fragment>

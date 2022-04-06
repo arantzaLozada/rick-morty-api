@@ -4,14 +4,13 @@ import { CharactersList } from '../components/CharactersList';
 import { CharacterItem } from '../components/CharacterItem';
 import { Header } from '../components/Header';
 import { Search } from '../components/Search';
-
-import './App.css';
 import { Pagination } from '../components/Pagination';
 
 function App() {
   const [data, setData] = useState([]); // estos son estados independientes, tambien hay estados compuestos que son mas escalables y para proyectos grandes
   const [searchValue, setSearchValue] = useState('');
   const [info, setInfo] = useState({});
+  const [loading, setLoading] = useState(true);
 
   const API_URL = 'https://rickandmortyapi.com/api/character';
 
@@ -20,8 +19,11 @@ function App() {
       const response = await fetch(url);
       const dataJSON = await response.json();
 
-      setData(dataJSON.results);
-      setInfo(dataJSON.info);
+      setTimeout(() => {
+        setData(dataJSON.results);
+        setInfo(dataJSON.info);
+        setLoading(false);
+      }, 1000);
     } catch (error) {
       console.log(error);
     }
@@ -67,7 +69,13 @@ function App() {
           <CharactersList
             filterCharacters={filterCharacters}
             searchValue={searchValue}
+            loading={loading}
           >
+            {loading && (
+              <strong className="text-white text-xl text-shadow">
+                Loading character...
+              </strong>
+            )}
             {filterCharacters.map((character) => (
               <CharacterItem
                 key={character.id}

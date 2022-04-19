@@ -1,10 +1,14 @@
 import React from 'react';
 
 function CharacterItem(props) {
+  const OnOpenModal = () => {
+    props.openModal(true);
+  };
+
   return (
     <React.Fragment>
       <li className="bg-indigo-500 rounded-md px-2 py-2 mx-2 my-2 w-60 h-72">
-        <button onClick={() => alert('aqui se abrira el modal')}>
+        <button onClick={OnOpenModal}>
           <div className="ml-2">
             <h2 className="text-center text-white text-lg font-medium pb-1">
               {props.name}

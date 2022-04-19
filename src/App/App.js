@@ -5,12 +5,15 @@ import { CharacterItem } from '../components/CharacterItem';
 import { Header } from '../components/Header';
 import { Search } from '../components/Search';
 import { Pagination } from '../components/Pagination';
+import { Modal } from '../components/Modal';
+import { CharacterCard } from '../components/CharacaterCard';
 
 function App() {
   const [data, setData] = useState([]); // estos son estados independientes, tambien hay estados compuestos que son mas escalables y para proyectos grandes
   const [searchValue, setSearchValue] = useState('');
   const [info, setInfo] = useState({});
   const [loading, setLoading] = useState(true);
+  const [openModal, setOpenModal] = React.useState(false);
 
   const API_URL = 'https://rickandmortyapi.com/api/character';
 
@@ -82,12 +85,18 @@ function App() {
                 name={character.name}
                 image={character.image}
                 status={character.status}
+                openModal={setOpenModal}
               />
             ))}
           </CharactersList>
           <Pagination prev={info.prev} previous={onPrevious} next={onNext} />
         </div>
       </div>
+      {!!openModal && (
+        <Modal closeModal={setOpenModal}>
+          <CharacterCard />
+        </Modal>
+      )}
     </React.Fragment>
   );
 }
